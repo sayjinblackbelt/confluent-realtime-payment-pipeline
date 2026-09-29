@@ -1,0 +1,12 @@
+-- Regra de fraude do desafio
+--
+-- Objetivo: identificar três transações no mesmo cartão dentro de uma
+-- janela de 60 segundos.
+--
+-- A consulta final será preenchida após validar os nomes dos tópicos,
+-- campos e tipos no ambiente real do Confluent Cloud.
+
+-- TODO: criar a tabela/view de entrada.
+-- TODO: aplicar a janela de 60 segundos.
+-- TODO: agrupar por cartão.
+-- TODO: emitir o alerta quando a contagem atingir 3.
