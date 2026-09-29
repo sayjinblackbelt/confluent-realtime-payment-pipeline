@@ -1,0 +1,34 @@
+-- Flink SQL — Sources
+--
+-- Ajuste os nomes dos tópicos e os campos conforme os schemas/eventos
+-- efetivamente criados no Confluent Cloud.
+-- Não coloque credenciais neste arquivo.
+
+-- Exemplo conceitual:
+-- CREATE TABLE payments (
+--   payment_id STRING,
+--   card_id STRING,
+--   account_id STRING,
+--   amount DECIMAL(18,2),
+--   event_time TIMESTAMP_LTZ(3),
+--   WATERMARK FOR event_time AS event_time - INTERVAL '5' SECOND
+-- ) WITH (
+--   'connector' = 'confluent',
+--   'topic' = '<payments-topic>'
+-- );
+
+-- CREATE TABLE accounts (
+--   account_id STRING,
+--   customer_id STRING,
+--   ...
+-- ) WITH (
+--   'connector' = 'confluent',
+--   'topic' = '<accounts-topic>'
+-- );
+
+-- Antes da execução, confirmar no ambiente real:
+-- 1. nomes dos tópicos;
+-- 2. campos e tipos do schema;
+-- 3. campo temporal disponível;
+-- 4. estratégia de event time/watermark;
+-- 5. mecanismo de autenticação configurado no Flink.
