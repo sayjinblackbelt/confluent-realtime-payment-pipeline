@@ -1,0 +1,23 @@
+-- Flink SQL — Enrichment
+--
+-- Objetivo: enriquecer os eventos de pagamento com dados de conta.
+-- Os nomes/joins abaixo são templates e devem ser ajustados ao schema real.
+
+-- Exemplo conceitual:
+-- SELECT
+--   p.payment_id,
+--   p.card_id,
+--   p.account_id,
+--   a.customer_id,
+--   p.amount,
+--   p.event_time
+-- FROM payments AS p
+-- JOIN accounts AS a
+--   ON p.account_id = a.account_id;
+
+-- Validar antes de executar:
+-- * cardinalidade do relacionamento;
+-- * chave de junção;
+-- * disponibilidade dos dados de conta;
+-- * comportamento temporal do join;
+-- * tratamento de eventos CDC que representam UPDATE/DELETE.
