@@ -1,0 +1,14 @@
+{
+  "type": "record",
+  "name": "Payment",
+  "namespace": "nexa.techhelp.payments",
+  "fields": [
+    {"name": "payment_id", "type": "long"},
+    {"name": "account_id", "type": "long"},
+    {"name": "card_id", "type": "long"},
+    {"name": "amount", "type": "double"},
+    {"name": "currency", "type": "string"},
+    {"name": "payment_status", "type": "string"},
+    {"name": "payment_created_at", "type": "string"}
+  ]
+}
