@@ -11,8 +11,28 @@ Demonstrar, de ponta a ponta, o caminho de um dado de pagamento desde sua origem
 ## 🏗️ Arquitetura
 
 ```text
-PostgreSQL → CDC → Confluent Cloud / Kafka → Flink SQL → Alerta de fraude → Consumer
+PostgreSQL
+    │
+    │ CDC
+    ▼
+Confluent Cloud / Kafka
+    │
+    ├── payments ───────────────┐
+    ├── accounts ──────────────┤
+    └── cards ─────────────────┤
+                               ▼
+                           Flink SQL
+                               │
+                 enriquecimento + regra de fraude
+                               │
+                               ▼
+                         fraud-alerts
+                               │
+                               ▼
+                            Consumer
 ```
+
+A documentação detalhada de tópicos, chaves, consumer groups e fluxo está em [`docs/arquitetura-topicos.md`](docs/arquitetura-topicos.md).
 
 ## 🔎 Cinco camadas
 
@@ -22,11 +42,29 @@ PostgreSQL → CDC → Confluent Cloud / Kafka → Flink SQL → Alerta de fraud
 4. **Processamento** — Flink SQL, enriquecimento e regra de fraude.
 5. **Operação** — métricas, acesso e custo.
 
+## 🔄 Fluxo de produtores e consumidores
+
+| Componente | Papel | Entrada | Saída |
+|---|---|---|---|
+| PostgreSQL | Origem transacional | Operações no banco | Alterações para CDC |
+| CDC Connector | Producer de eventos de mudança | PostgreSQL | Tópicos Kafka |
+| Flink SQL | Consumer + processador | Eventos de pagamentos e dados de apoio | `fraud-alerts` |
+| Fraud Alerts | Tópico de saída | Resultado do Flink | Eventos de fraude |
+| Consumer | Consumer final | `fraud-alerts` | Evidência do alerta |
+
+### Regra de particionamento
+
+A chave deve representar a entidade cuja ordem de negócio precisa ser preservada. Para a detecção de fraude, o cartão é a referência principal: eventos do mesmo cartão devem utilizar uma chave consistente para que sejam encaminhados de forma previsível para uma mesma partição.
+
+### Consumer Groups
+
+Cada aplicação consumidora terá seu próprio `group.id`. Dentro de um mesmo consumer group, cada partição é atribuída a no máximo um consumer por vez. O paralelismo efetivo depende do número de partições disponíveis.
+
 ## 🚨 Regra de fraude
 
 **Três transações no mesmo cartão dentro de uma janela de 60 segundos geram um alerta de fraude.**
 
-A consulta definitiva será registrada em [`sql/fraude.sql`](sql/fraude.sql) após a validação no Confluent Cloud.
+A consulta de referência está em [`sql/fraud.sql`](sql/fraud.sql). A sintaxe e o resultado definitivos serão validados no ambiente Flink do Confluent Cloud.
 
 ## 📁 Estrutura
 
@@ -37,13 +75,15 @@ A consulta definitiva será registrada em [`sql/fraude.sql`](sql/fraude.sql) ap�
 ├── .gitignore
 ├── docs/
 │   ├── arquitetura.md
+│   ├── arquitetura-topicos.md
 │   └── evidencias/
-├── sql/
-│   └── fraude.sql
 ├── schemas/
-│   └── README.md
+│   └── payment.avsc
+├── sql/
+│   ├── schema.sql
+│   ├── seed.sql
+│   └── fraud.sql
 └── scripts/
-    └── README.md
 ```
 
 ## 🧩 Tecnologias
@@ -60,7 +100,7 @@ A consulta definitiva será registrada em [`sql/fraude.sql`](sql/fraude.sql) ap�
 
 ## 🔐 Segurança
 
-Credenciais e chaves não devem ser versionadas. O projeto usará `.env` localmente e manterá apenas `.env.example` no repositório.
+Credenciais e chaves não devem ser versionadas. O projeto usa `.env` localmente e mantém apenas `.env.example` no repositório.
 
 ## 📸 Evidências
 
@@ -68,7 +108,7 @@ Cada camada terá evidência verificável de execução: captura de tela, saída
 
 ## ▶️ Execução
 
-A documentação final será preenchida após a configuração e validação do ambiente:
+A documentação operacional final será preenchida após a configuração e validação do ambiente:
 
 ```text
 1. Pré-requisitos
@@ -93,6 +133,7 @@ O custo real será registrado após a execução, considerando os recursos provi
 |---|---|
 | Repositório | 🟢 Criado |
 | Estrutura inicial | 🟢 Em preparação |
+| Arquitetura de tópicos | 🟢 Documentada |
 | PostgreSQL | ⚪ Pendente |
 | Confluent Cloud | ⚪ Pendente |
 | Schema Registry | ⚪ Pendente |
