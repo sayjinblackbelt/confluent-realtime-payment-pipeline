@@ -1,0 +1,31 @@
+-- Flink SQL — Fraud Detection
+--
+-- Regra do desafio:
+-- três transações no mesmo cartão em 60 segundos geram um alerta.
+--
+-- Este arquivo intentionally mantém a consulta como template até que
+-- o schema e o campo temporal reais sejam confirmados no Confluent Cloud.
+
+-- Exemplo de estrutura para uma janela:
+-- SELECT
+--   card_id,
+--   window_start,
+--   window_end,
+--   COUNT(*) AS transaction_count
+-- FROM TABLE(
+--   TUMBLE(TABLE enriched_payments, DESCRIPTOR(event_time), INTERVAL '60' SECOND)
+-- )
+-- GROUP BY card_id, window_start, window_end
+-- HAVING COUNT(*) >= 3;
+
+-- A implementação final deve registrar explicitamente:
+-- * tipo de janela escolhido;
+-- * campo usado como event time;
+-- * watermark;
+-- * condição >= 3;
+-- * formato do alerta;
+-- * tópico de saída fraud-alerts.
+--
+-- Atenção: TUMBLE representa janelas fixas. Se a interpretação do desafio
+-- exigir uma janela móvel/overlapping de 60 segundos, a estratégia deverá
+-- ser alterada após validar o comportamento esperado.
