@@ -1,0 +1,14 @@
+{
+  "type": "record",
+  "name": "PaymentEvent",
+  "namespace": "com.filipe.realtimepayments",
+  "doc": "Synthetic payment event for the real-time streaming pipeline.",
+  "fields": [
+    {"name": "payment_id", "type": "long"},
+    {"name": "account_id", "type": "long"},
+    {"name": "card_id", "type": "string"},
+    {"name": "amount", "type": "double"},
+    {"name": "payment_status", "type": "string"},
+    {"name": "event_time", "type": {"type": "long", "logicalType": "timestamp-millis"}}
+  ]
+}
