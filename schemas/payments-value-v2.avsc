@@ -1,0 +1,15 @@
+{
+  "type": "record",
+  "name": "PaymentEvent",
+  "namespace": "com.filipe.realtimepayments",
+  "doc": "Evolution example: optional merchant_category field added with a default.",
+  "fields": [
+    {"name": "payment_id", "type": "long"},
+    {"name": "account_id", "type": "long"},
+    {"name": "card_id", "type": "string"},
+    {"name": "amount", "type": "double"},
+    {"name": "payment_status", "type": "string"},
+    {"name": "event_time", "type": {"type": "long", "logicalType": "timestamp-millis"}},
+    {"name": "merchant_category", "type": ["null", "string"], "default": null}
+  ]
+}
